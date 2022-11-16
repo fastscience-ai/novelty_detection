@@ -11,10 +11,11 @@ from ab_dataset_tensor import *
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from ab_fcnn import *
-
+import pickle
 
 def convert_pickle_to_image(path_to_pickle):
     observation = pickle.load(open(path_to_pickle, "rb"))
+
     obsimg = SBObs_to_Imgs()
     state, action, inter_states = obsimg.Obs_to_StateActionNextState(observation)
     reward =  observation.reward
@@ -35,24 +36,22 @@ def collect_data(path):
     state_input = []
     action_input = []
     reward_output = []
-    for subdir in os.listdir(path):
-        print("collect data from   : "+subdir)
-        for idx, file in enumerate(glob.glob1(os.path.join(path, subdir), '*.p')):
-            print("Collecting file at "+path+"/"+subdir+"/"+file)
-            state_img, action, reward = convert_pickle_to_image(path+"/"+subdir+"/"+file)
-            state_input.append(state_img)
-            action_input.append(action)
-            reward_output.append(reward)
-        #state_input_sub =  state_input
-        #action_input_sub 
-
+    for subdir1 in os.listdir(path):
+        for subdir2 in os.listdir(path+"/"+subdir1):
+            print("collect data from   : "+subdir1+"/"+subdir2)
+            for idx, file in enumerate(glob.glob1(os.path.join(os.path.join(path, subdir1), subdir2), '*.p')):
+                print("Collecting file at "+path+"/"+subdir1+"/"+subdir2+"/"+file)
+                state_img, action, reward = convert_pickle_to_image(path+"/"+subdir1+"/"+subdir2+"/"+file)
+                state_input.append(state_img)
+                action_input.append(action)
+                reward_output.append(reward)
     state_input = np.concatenate(state_input, axis = 0)
     action_input = np.concatenate(action_input, axis = 0)
     reward_output = np.concatenate(reward_output, axis = 0)
-
-    #np.save("state_input_nonzero.npy", state_input)
-    #np.save("action_input_nonzero.npy", action_input)
-    #np.save("reward_ouput_nonzero.npy", reward_output)
+    print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
+    np.save("state_input_nonzero.npy", state_input)
+    np.save("action_input_nonzero.npy", action_input)
+    np.save("reward_ouput_nonzero.npy", reward_output)
     #Shuffle
     assert(len(state_input)  == len(action_input) == len(reward_output))
     idx = [ i for i in range(len(state_input))]
