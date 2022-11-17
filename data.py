@@ -12,6 +12,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from ab_fcnn import *
 import pickle
+import agent
 
 def convert_pickle_to_image(path_to_pickle):
     observation = pickle.load(open(path_to_pickle, "rb"))
@@ -49,9 +50,7 @@ def collect_data(path):
     action_input = np.concatenate(action_input, axis = 0)
     reward_output = np.concatenate(reward_output, axis = 0)
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
-    np.save("state_input_nonzero.npy", state_input)
-    np.save("action_input_nonzero.npy", action_input)
-    np.save("reward_ouput_nonzero.npy", reward_output)
+
     #Shuffle
     assert(len(state_input)  == len(action_input) == len(reward_output))
     idx = [ i for i in range(len(state_input))]
@@ -66,6 +65,10 @@ def collect_data(path):
     state_input_s = np.concatenate(state_input_s, axis = 0)
     action_input_s = np.concatenate(action_input_s, axis = 0)
     reward_output_s = np.concatenate(reward_output_s, axis = 0)   
+    path_in = "./soo_novelty_detection/input_data/"
+    np.save(path_in+"state.npy", state_input_s)
+    np.save(path_in+"action.npy", action_input_s)
+    np.save(path_in+"reward.npy", reward_output_s)
         
     print(np.shape(state_input_s), np.shape(action_input_s), np.shape(reward_output_s))
     return state_input_s, action_input_s, reward_output_s
@@ -181,9 +184,9 @@ def normalization(state_input, action_input, reward_output):
     #with open("reward_output_nonzero.pkl",'wb') as f:
     #    pickle.dump( reward_output, f)   
 
-    np.save("./input_data/state.npy", np.asarray(state_input))
-    np.save("./input_data/action.npy", np.asarray(action_input))
-    np.save("./input_data/reward.npy", np.asarray(reward_output))
+    np.save("./soo_novelty_detection/input_data/state.npy", np.asarray(state_input))
+    np.save("./soo_novelty_detection/input_data/action.npy", np.asarray(action_input))
+    np.save("./soo_novelty_detection/input_data/reward.npy", np.asarray(reward_output))
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
     #np.savez("nomarlized_level0.npz", state = state_input, action = action_input, reward = reward_output)
     return state_input, action_input, reward_output

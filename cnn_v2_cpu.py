@@ -117,19 +117,14 @@ def main(state_file, epoch):
     model(torch.randn(6, 13, 300, 600), torch.randn(6,5))
     
     #load data
-    state_input, action_input, reward_output = collect_data("./data/non-novelty/")
+    """
+    state_input, action_input, reward_output = collect_data("./soo_novelty_detection/data/non-novelty/")
     state_input, action_input, reward_output = normalization(state_input, action_input, reward_output)
     #state_input, action_input, reward_output = normalization_L1T7(state_input, action_input, reward_output)
-    exit()
-    #data = np.load("nomarlized_obs_200_level_0_type_2_novelties.npz")
-    state_input = data['state'][:,:,100:400,0:600] # did alredy
-    state_input = data['state']
-    action_input = data['action']
-    reward_output = np.reshape(data['reward'], [-1,1])
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
     print(np.amax(state_input), np.amin(state_input), np.amax(action_input), np.amin(action_input), np.amax(reward_output), np.amin(reward_output))
-    
-    path_in = "./input_data/"
+    """
+    path_in = "./soo_novelty_detection/input_data/"
     state_input, action_input, reward_output = np.load(path_in+"state.npy"), np.load(path_in+"action.npy"), np.load(path_in+"reward.npy")
     n = len(state_input)
     x_train_1, x_test_1 = state_input[:int(n*0.9)], state_input[int(n*0.9):]
@@ -139,76 +134,51 @@ def main(state_file, epoch):
     print(np.amax(state_input), np.amin(state_input), np.amax(action_input), np.amin(action_input), np.amax(reward_output), np.amin(reward_output))
     N, C, H, W = np.shape(x_train_1)
    
-    f_log = open("log_concat.txt", "w")
+    f_log = open("./soo_novelty_detection/log_concat.txt", "w")
     if state_file is None: 
         #train
         outter_epoch_num = epoch
-        inner_epoch_num = 100
         model.train()
         batch_size = 10
-        os.mkdir("./saved_model_L0_222_225")
+        os.mkdir("./soo_novelty_detection/saved_model_non-novelty/")
         reward_all = []
         for outter_epoch in range(outter_epoch_num + 1):
                 count = 0
-                running_loss = 0.0
-                '''
-                #load file from folder
-                path_to_data = "./data/120000pts/100_level_0_type_2_novelties/"
-                folder_name = [ "r_2_2", "r_3_1",  "r_5_1"] #Train: [ "r_1_1",   "r_1_3",  "r_1_4",    "r_2_2",   "r_3_1", "r_4_1", "r_5_1"]  #Test: ["r_4_2"]
-                for name in folder_name:
-                    state_input, action_input, reward_output = collect_data_from_folder(path_to_data+name+"/")
-                    state_input, action_input, reward_output = normalization(state_input, action_input, reward_output)
-                    reward_output = np.reshape(reward_output, [-1,1])
-                    print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
-                    print(np.amax(state_input), np.amin(state_input), np.amax(action_input), np.amin(action_input), np.amax(reward_output), np.amin(reward_output))
-                    x_test_1 =  np.load("x_test_1.npy")
-                    x_test_2 =  np.load("x_test_2.npy")
-                    y_test   =  np.load("y_test.npy")  
-                '''                
-                                
+                running_loss = 0.0     
                 if True:          
-                    '''                
-                    n = len(state_input)
-                    x_train_1 = state_input
-                    x_train_2 = action_input
-                    y_train = reward_output
-                    '''
                     n = len(y_train)
                     reward_all.append(np.reshape(y_train, [n,1]))
                     count = count +1
                     print(np.shape(x_train_1), np.shape(x_train_2), np.shape(x_test_1), np.shape(x_test_2), np.shape(y_train), np.shape(y_test))
                     N, C, H, W = np.shape(x_train_1)
-                    if True:
-                    #for inner_epoch in range(inner_epoch_num+1):
-                        #epoch = outter_epoch*10 + inner_epoch
-                        for i in range(int(N/batch_size)):
-                            optimizer.zero_grad()
-                            output = model(torch.tensor(x_train_1[i*batch_size: (i+1)*batch_size,:,:,:]), torch.tensor(x_train_2[i*batch_size: (i+1)*batch_size,:]))
-                            loss = criterion(output, torch.tensor(y_train[i*batch_size: (i+1)*batch_size,:]))
-                            loss.backward()
-                            optimizer.step()
-                            running_loss += loss.item()
-                            if i%10 == 0:
-                                print("loss of {} epoch  , {} index out of {} : {}".format(outter_epoch, i, N/batch_size, running_loss/float(i+1)))
-                                f_log.write("loss of {} epoch  , {} index out of {} : {}".format(outter_epoch, i, N/batch_size, running_loss/float(i+1)))
-                                f_log.write("\n")
-                            if epoch % 100 == 0 and epoch > 0 :
-                                for j in range(int(N*0.02/batch_size)):
-                                    y_hat = model(torch.tensor(x_test_1[j*batch_size: (j+1)*batch_size, :,:,:]),torch.tensor(x_test_2[j*batch_size: (j+1)*batch_size, :]))
-                                    val_loss = criterion(y_hat, torch.tensor(y_test[j*batch_size: (j+1)*batch_size, :])).item()
-                                    print("val Loss (total epoch"+str(int(epoch))+"): "+str(val_loss))
-                                    f_log.write("\n")
-                                    f_log.write("val Loss (total epoch"+str(int(epoch))+"): "+str(val_loss))
-                                    f_log.write("\n")
-                                    y_hat  =  y_hat.cpu().detach().numpy()
-                                PATH = './saved_model_L0_222_225/'+str(epoch)+'.pth'
-                                torch.save(model.state_dict(), PATH)
+                    for i in range(int(N/batch_size)):
+                        optimizer.zero_grad()
+                        output = model(torch.tensor(x_train_1[i*batch_size: (i+1)*batch_size,:,:,:]).float(), torch.tensor(x_train_2[i*batch_size: (i+1)*batch_size,:]).float())
+
+                        loss = criterion(output, torch.tensor(y_train[i*batch_size: (i+1)*batch_size,:]).float())
+                        loss.backward()
+                        optimizer.step()
+                        running_loss += loss.item()
+                        if i%10 == 0:
+                            print("loss of {} epoch  , {} index out of {} : {}".format(outter_epoch, i, N/batch_size, running_loss/float(i+1)))
+                            f_log.write("loss of {} epoch  , {} index out of {} : {}".format(outter_epoch, i, N/batch_size, running_loss/float(i+1)))
+                            f_log.write("\n")
+                    if outter_epoch % 100 == 0 and outter_epoch > 0 :
+                        for j in range(int(N*0.02/batch_size)):
+                            y_hat = model(torch.tensor(x_test_1[j*batch_size: (j+1)*batch_size, :,:,:]).float(),torch.tensor(x_test_2[j*batch_size: (j+1)*batch_size, :]).float())
+                            val_loss = criterion(y_hat, torch.tensor(y_test[j*batch_size: (j+1)*batch_size, :]).float()).item()
+                            print("val Loss (total epoch"+str(int(epoch))+"): "+str(val_loss))
+                        f_log.write("\n")
+                        f_log.write("val Loss (total epoch"+str(int(epoch))+"): "+str(val_loss))
+                        f_log.write("\n")
+                        y_hat  =  y_hat.cpu().detach().numpy()
+                        PATH = './soo_novelty_detection/saved_model_non-novelty/'+str(epoch)+'.pth'
+                        torch.save(model.state_dict(), PATH)
         reward_save=np.concatenate(reward_all, axis=0)
         d1,d2 =np.shape(reward_save)
         reward_save = np.reshape(reward_save, [d1*d2,1])
-        np.save("reward_train.npy", reward_save)
+        np.save("./soo_novelty_detection/input_data/reward_train.npy", reward_save)
     else:
-
          print(np.shape(x_test_1)) #(387, 13, 300, 600)
          model.load_state_dict(torch.load(state_file))
          # evaluate accuracy on the training data
@@ -242,7 +212,7 @@ def main(state_file, epoch):
 if __name__ == '__main__':
     torch.manual_seed(42)
     np.random.seed(10)
-    epoch = 300
-    state_file ='./saved_model_L0/'+str(epoch)+'.pth'
-    #state_file = None
+    epoch = 500
+    #state_file ='./soo_novelty_detection/saved_model_non-novelty//'+str(epoch)+'.pth'
+    state_file = None
     main(state_file, epoch) # if state_file is None: training, otherwise, eval of pretraine-model
