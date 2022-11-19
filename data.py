@@ -76,21 +76,18 @@ def collect_data(path):
    
     
 def collect_data_from_folder(path):
-    # path: ./data/200_level_1_type_9_novelties/
-    #       ./data/200_level_1_type_10_novelties/
     # input size for torch.nn.Conv2d : (N, C, W, H)
     state_input = []
     action_input = []
     reward_output = []
     print("Collecting file at "+path)
-    for idx, file in enumerate(glob.glob1(path, "*.p")):
-        #print("Collecting file at "+path+"/"+file)
-        state_img, action, reward = convert_pickle_to_image(path+"/"+file)
-        state_input.append(state_img)
-        action_input.append(action)
-        reward_output.append(reward)
-    #state_input_sub =  state_input
-    #action_input_sub        
+    for subdir in os.listdir(path):
+        for idx, file in enumerate(glob.glob1(os.path.join(path, subdir), "*.p")):
+            print(path+"/"+subdir+"/"+file)
+            state_img, action, reward = convert_pickle_to_image(path+"/"+subdir+"/"+file)
+            state_input.append(state_img)
+            action_input.append(action)
+            reward_output.append(reward)      
     state_input = np.concatenate(state_input, axis = 0)
     action_input = np.concatenate(action_input, axis = 0)
     reward_output = np.concatenate(reward_output, axis = 0)
@@ -192,14 +189,14 @@ def normalization(state_input, action_input, reward_output):
     return state_input, action_input, reward_output
 
 
-def normalization_L1T7(state_input, action_input, reward_output):
-    state_max = np.load("state_max.npy")
-    state_min = np.load("state_min.npy")
-    action_max = np.load("action_max.npy")
-    action_min = np.load("action_min.npy")
-    
-    reward_max = np.load("reward_max.npy")
-    reward_min = np.load("reward_min.npy")
+def normalization_L0(state_input, action_input, reward_output):
+    path="./soo_novelty_detection/input_data/" # Path of saving data files of L0
+    state_max = np.load(path+"state_max.npy")
+    state_min = np.load(path+"state_min.npy")
+    action_max = np.load(path+"action_max.npy")
+    action_min = np.load(path+"action_min.npy")
+    reward_max = np.load(path+"reward_max.npy")
+    reward_min = np.load(path+"reward_min.npy")
     print(np.amax(reward_output), np.amin(reward_output))
     print("Normalization start")
     for i in range(13):
@@ -215,11 +212,6 @@ def normalization_L1T7(state_input, action_input, reward_output):
             action_input[:,j] = 0.0
     reward_output = (reward_output[:, 0] - reward_min[0])/(reward_max[0] - reward_min[0])
     reward_output = np.reshape(reward_output, [-1,1])
-  
-
-    np.save("./input_data/state_l25t1.npy", np.asarray(state_input))
-    np.save("./input_data/action_l25t1.npy", np.asarray(action_input))
-    np.save("./input_data/reward_l25t1.npy", np.asarray(reward_output))
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
     return state_input, action_input, reward_output
 

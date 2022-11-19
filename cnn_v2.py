@@ -125,14 +125,14 @@ def main(state_file, epoch):
     #trouble shooting
     #model(torch.randn(6, 13, 300, 600).cuda(), torch.randn(6,5).cuda()).float().cuda()
     #load data
-    """
-    state_input, action_input, reward_output = collect_data("./soo_novelty_detection/data/non-novelty/")
+    #"""
+    state_input, action_input, reward_output = collect_data("./soo_novelty_detection/data/novelty_level_0/")
     state_input, action_input, reward_output = normalization(state_input, action_input, reward_output)
     #state_input, action_input, reward_output = normalization_L1T7(state_input, action_input, reward_output)
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
     print(np.amax(state_input), np.amin(state_input), np.amax(action_input), np.amin(action_input), np.amax(reward_output), np.amin(reward_output))
     exit()
-   """
+   #"""
     path_in = "./soo_novelty_detection/input_data/"
     state_input, action_input, reward_output = np.load(path_in+"state.npy"), np.load(path_in+"action.npy"), np.load(path_in+"reward.npy")
     n = len(state_input)
@@ -227,6 +227,6 @@ if __name__ == '__main__':
     torch.manual_seed(42)
     np.random.seed(10)
     epoch = 300
-    state_file ='./soo_novelty_detection/saved_model_non-novelty/'+str(epoch)+'.pth'
-    #state_file = None
+    #state_file ='./soo_novelty_detection/saved_model_non-novelty/'+str(epoch)+'.pth'
+    state_file = None
     main(state_file, epoch) # if state_file is None: training, otherwise, eval of pretraine-model
