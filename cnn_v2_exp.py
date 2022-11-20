@@ -297,7 +297,14 @@ def main(state_file, epoch):
              error_denorm = np.mean(error[i])*(y_max[0]-y_min[0])+y_min[0]
              ax.scatter(gt, pr, marker=m_l[i+1], c=c_l[i+1], label=label[i]+" "+str(round(error_denorm,5)) )
              fout.close()
-         ax.legend()
+             
+         # Shrink current axis by 20%
+         box = ax.get_position()
+         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+         # Put a legend to the right of the current axis
+         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+         #ax.legend()
          ax.grid(True)
          plt.xlabel("Ground Truth")
          plt.ylabel("Prediction")
