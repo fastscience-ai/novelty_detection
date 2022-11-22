@@ -281,7 +281,7 @@ def main(state_file, epoch):
              gt.append(float(y_test[j,0]*(y_max[0]-y_min[0])+y_min[0]))
              pr.append(float(Y_pred[j,0]*(y_max[0]-y_min[0])+y_min[0]))
          error_denorm = np.mean(error)*(y_max[0]-y_min[0])+y_min[0]
-         ax.scatter(gt, pr, marker="o", c=c_l[0], label="level0 "+str(round(error_denorm,5)) )
+         ax.scatter(gt, pr, marker="o", c=c_l[0], label="level0:"+str(round(error_denorm,2)) )
          fout.close()
          # (3-2) scatter for other levels in test folder
          for i in range(len(state_input_test)):
@@ -295,12 +295,12 @@ def main(state_file, epoch):
                  gt.append(float(y_test2[j,0]*(y_max[0]-y_min[0])+y_min[0]))
                  pr.append(float(Y_pred_[j]*(y_max[0]-y_min[0])+y_min[0]))
              error_denorm = np.mean(error[i])*(y_max[0]-y_min[0])+y_min[0]
-             ax.scatter(gt, pr, marker=m_l[i+1], c=c_l[i+1], label=label[i]+" "+str(round(error_denorm,5)) )
+             ax.scatter(gt, pr, marker=m_l[i+1], c=c_l[i+1], label=label[i]+":"+str(round(error_denorm,2)) )
              fout.close()
              
          # Shrink current axis by 20%
          box = ax.get_position()
-         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+         ax.set_position([box.x0, box.y0, box.width * 0.7, box.height])
 
          # Put a legend to the right of the current axis
          ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -308,7 +308,7 @@ def main(state_file, epoch):
          ax.grid(True)
          plt.xlabel("Ground Truth")
          plt.ylabel("Prediction")
-         plt.title("Testing results and RMSE using the model trained with level 0")
+         plt.title("Testing results: RMSE (model trained with level 0)")
          plt.savefig("./soo_novelty_detection/"+name_output_dir + "/scatter_plot.png")
          plt.close()
          #(3-1) error histogram for testing with L0
@@ -316,7 +316,7 @@ def main(state_file, epoch):
          plt.hist(error, n_bins)
          plt.xlabel("RMSE")
          plt.ylabel("Counts")
-         plt.title("RMSE for testing with level0 , RMSE : "+str(round(np.mean(error)*(y_max[0]-y_min[0])+y_min[0],5)))
+         plt.title("RMSE for testing with level0 , RMSE: "+str(round(np.mean(error)*(y_max[0]-y_min[0])+y_min[0],2)))
          plt.savefig("./soo_novelty_detection/"+name_output_dir + "/error_hist_level0.png")
          plt.close()
          #(3-1) error histogram for testing with different levels and types
@@ -324,7 +324,7 @@ def main(state_file, epoch):
              plt.hist(error[i], n_bins)
              plt.xlabel("RMSE")
              plt.ylabel("Counts")
-             plt.title("RMSE for testing with "+label[i]+" , RMSE : "+str(round(np.mean(error[i])*(y_max[0]-y_min[0])+y_min[0],5)))
+             plt.title("RMSE for testing with "+label[i]+" , RMSE: "+str(round(np.mean(error[i])*(y_max[0]-y_min[0])+y_min[0],2)))
              plt.savefig("./soo_novelty_detection/"+name_output_dir + "/error_hist_"+label[i]+".png")
              plt.close()
        

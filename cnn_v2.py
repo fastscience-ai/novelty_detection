@@ -125,14 +125,14 @@ def main(state_file, epoch):
     #trouble shooting
     #model(torch.randn(6, 13, 300, 600).cuda(), torch.randn(6,5).cuda()).float().cuda()
     #load data
-    #"""
+    """
     state_input, action_input, reward_output = collect_data("./soo_novelty_detection/data/novelty_level_0/")
     state_input, action_input, reward_output = normalization(state_input, action_input, reward_output)
     #state_input, action_input, reward_output = normalization_L1T7(state_input, action_input, reward_output)
     print(np.shape(state_input), np.shape(action_input), np.shape(reward_output))
     print(np.amax(state_input), np.amin(state_input), np.amax(action_input), np.amin(action_input), np.amax(reward_output), np.amin(reward_output))
     exit()
-   #"""
+   """
     path_in = "./soo_novelty_detection/input_data/"
     state_input, action_input, reward_output = np.load(path_in+"state.npy"), np.load(path_in+"action.npy"), np.load(path_in+"reward.npy")
     n = len(state_input)
@@ -205,8 +205,8 @@ def main(state_file, epoch):
          y_max = np.load("./soo_novelty_detection/input_data/reward_max.npy")
          y_min = np.load("./soo_novelty_detection/input_data/reward_min.npy")
          print(y_test.shape)
-         os.mkdir("./soo_novelty_detection/reward_prediction_mse_" + str(mse))
-         fout = open("./soo_novelty_detection/reward_prediction_mse_" + str(mse) + "/output.csv", "w")
+         os.mkdir("./soo_novelty_detection/reward_prediction_"+str(epoch)+"_mse_" + str(mse))
+         fout = open("./soo_novelty_detection/reward_prediction_"+str(epoch)+"_mse_" + str(mse) + "/output.csv", "w")
          fout.write("ground truth, prediction" + "\n")
          gt =[]
          pr = []
@@ -218,7 +218,7 @@ def main(state_file, epoch):
              plt.xlabel("Ground Truth")
              plt.ylabel("Prediction")
              plt.title("train with L0t_all, test with L0t_all "+", RMSE :"+str(float(mean_squared_error(gt, pr))**0.5))
-             plt.savefig("./soo_novelty_detection/reward_prediction_mse_" + str(mse)+"/"+"fig.png")
+             plt.savefig("./soo_novelty_detection/reward_prediction_"+str(epoch)+"_mse_" + str(mse)+"/"+"fig.png")
              plt.close()
          fout.close()
     f_log.close()
@@ -226,7 +226,7 @@ def main(state_file, epoch):
 if __name__ == '__main__':
     torch.manual_seed(42)
     np.random.seed(10)
-    epoch = 300
-    #state_file ='./soo_novelty_detection/saved_model_non-novelty/'+str(epoch)+'.pth'
-    state_file = None
+    epoch = 200
+    state_file ='./soo_novelty_detection/saved_model_non-novelty/'+str(epoch)+'.pth'
+    #state_file = None
     main(state_file, epoch) # if state_file is None: training, otherwise, eval of pretraine-model
